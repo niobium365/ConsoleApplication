@@ -14,7 +14,8 @@
 
 // 从c++20 库中抄过来
 template <class _Ty>
-struct type_identity {
+struct type_identity
+{
 	using type = _Ty;
 };
 
@@ -49,3 +50,35 @@ struct Person
 	json::any secret;
 };
 
+inline bool operator==(Address const& lhs, Address const& rhs);
+inline bool operator==(Friend const& lhs, Friend const& rhs)
+{
+	auto& [a1, b1] = lhs;
+	auto& [a2, b2] = rhs;
+
+	return std::tie(a1, b1) == std::tie(a2, b2);
+}
+
+inline bool operator==(Singer const& lhs, Singer const& rhs)
+{
+	auto& [a1, b1] = lhs;
+	auto& [a2, b2] = rhs;
+
+	return std::tie(a1, b1) == std::tie(a2, b2);
+}
+
+inline bool operator==(Person const& lhs, Person const& rhs)
+{
+	auto& [a1, b1, c1, d1, e1] = lhs;
+	auto& [a2, b2, c2, d2, e2] = rhs;
+
+	return std::tie(a1, b1, c1, d1, e1) == std::tie(a2, b2, c2, d2, e2);
+}
+
+inline bool operator==(Address const& lhs, Address const& rhs)
+{
+	auto& [a1, b1, c1, d1] = lhs;
+	auto& [a2, b2, c2, d2] = rhs;
+
+	return std::tie(a1, b1, c1, d1) == std::tie(a2, b2, c2, d2);
+}

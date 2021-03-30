@@ -52,3 +52,4 @@ void serialize(Archive& ar, Person& g, const unsigned int version)
 } // namespace boost
 
 #include "json_oarchive.hpp"
+#include "json_iarchive.hpp"
