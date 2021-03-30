@@ -7,6 +7,7 @@
 #include "test_task.hpp"
 #include "test_task_parse.hpp"
 #include "test_task_dump.hpp"
+#include "test_task_boost.hpp"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -106,6 +107,45 @@ bool operator==(json::any const& lhs, json::any const& rhs)
 	return dump(lhs) == dump(rhs);
 }
 
+std::string dump_v(Value const& v)
+{
+	rapidjson::StringBuffer buffer;
+	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
+	v.Accept(writer);
+
+	auto r = buffer.GetString();
+    std::cout << r << std::endl;
+    return r;
+};
+
+int main_impl2()
+{
+    {
+        json::any f1("rocker"s);
+
+        auto r = f_json_dump_value(f1);
+        dump_v(r);
+    }
+    {
+    	Friend f1{ "my best friend", Singer{"rocker"s, 18} };
+        auto r = f_json_dump_value(f1);
+        dump_v(r);
+    }
+
+	Friend f1{ "my best friend", Singer{"rocker", 18} };
+	Friend f2{ "new friend", "little girl" };
+	Friend f3{ "third friend", 3 };
+	Person p2{ "p2", 3, Address{"china", "shanghai", "putuo"} };
+	Address addr1{ "china", "beijing", "wangjing", {p2} };
+	Person p1{ "p1", 4, addr1, {f1, f2, f3}, "the kind!" };
+
+	auto json = f_json_dump_value(p1);           // 序列化
+	dump_v(json); // 打印序列化结果
+
+
+	return 0;
+}
+
 int main_impl()
 {
 	Friend f1{ "my best friend", Singer{"rocker", 18} };
@@ -122,7 +162,7 @@ int main_impl()
 		auto s = dump(aaa);
 		std::cout << s << std::endl; // 打印序列化结果
 		auto m = parse(s);
-		auto& kkk = std::any_cast<string&>(m);
+		auto& kkk = json::any_cast<string const&>(m);
 		assert(aaa == m); // 反序列化的结果是对的
 	}
 
@@ -131,7 +171,7 @@ int main_impl()
 		auto s = dump(aaa);
 		std::cout << s << std::endl; // 打印序列化结果
 		auto m = parse(s);
-		auto& kkk = std::any_cast<Singer&>(m);
+		auto& kkk = json::any_cast<Singer const&>(m);
 		assert(json::any(aaa) == m); // 反序列化的结果是对的
 	}
 
@@ -143,7 +183,7 @@ int main_impl()
 
 	auto pp = parse(json); // 反序列化
 
-	auto& kkk2 = std::any_cast<Person&>(pp);
+	auto& kkk2 = json::any_cast<Person const&>(pp);
 
 	assert(json::any(p1) == pp); // 反序列化的结果是对的
 
@@ -154,7 +194,7 @@ int main()
 {
 	try
 	{
-		return main_impl();
+		return main_impl2();
 	}
 	catch (std::exception const& e)
 	{

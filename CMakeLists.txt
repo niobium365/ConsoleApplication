@@ -18,6 +18,11 @@ set(_target "test_task")
 
 add_executable(${_target} ${helloworld_SRC})
 
+find_package(Boost
+  1.71.0 COMPONENTS serialization
+  REQUIRED
+)
+
 target_compile_options(${_target} PUBLIC $<$<COMPILE_LANGUAGE:C>:
 -std=gnu11
 -Wall
@@ -35,6 +40,11 @@ $<$<COMPILE_LANGUAGE:CXX>:
 >
 )
 
+target_include_directories(${_target} PUBLIC
+${Boost_INCLUDE_DIRS}
+
+)
+
 target_link_options(${_target} PUBLIC 
 -v 
 -Wl,-stats
@@ -47,4 +57,5 @@ target_link_options(${_target} PUBLIC
 target_link_libraries(${_target} PUBLIC 
 c++
 c++abi
+${Boost_LIBRARIES}
 )

@@ -4,6 +4,13 @@
 #include <vector>
 #include <iostream>
 #include <any>
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/document.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/prettywriter.h"
+
+#include "test_task_any.hpp"
 
 // 从c++20 库中抄过来
 template <class _Ty>
@@ -14,24 +21,6 @@ struct type_identity {
 // 帮助overload 不同类型 等功能
 template <typename T>
 using id__ = type_identity<T>;
-
-namespace json
-{
-	struct any : std::any
-	{
-		using parent_t = std::any;
-		using parent_t::parent_t;
-
-		any() = default;
-
-		// 特殊处理 const char*
-		// const char* 反序列化时类型应该是string 否则无法分配内存
-		any(const char* s)
-			:parent_t(std::string(s))
-		{}
-	};
-
-}; // namespace json
 
 struct Person;
 struct Singer
