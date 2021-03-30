@@ -2,19 +2,63 @@
 
 0 cmake -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_C_COMPILER:FILEPATH=/bin/clang-11 -DCMAKE_CXX_COMPILER:FILEPATH=/bin/clang++-11 -Bbuild -G Ninja
 
-1 本测试未参考其他资料.
+1 本测试程序新版参考了 https://www.boost.org/doc/libs/1_75_0/libs/serialization/doc/index.html.
 
-2 测试工程在visual studio 2019 + (MSVC2019 或 clang10-cl) 32 位模式下编译通过 完成. 如需要x64 还需要对size_t进行处理
+2 测试工程在CMAKE clang11 Ubuntu20 x64模式下编译通过 完成.
 
-3 json::any 直接使用了std::any 并对 const char*做了特殊处理.
+3 第二版只完成序列化部分, 反序列化部分进行中.
 
 4 由于以前从没用过RapidJason库 (我自己一直使用nlohmann::json) 所以有些RapidJason 的API使用起来可能比较笨拙 :)
 
-5 要说句抱歉这个测试使用了C++17 标准, 主要是inline variable. 转成C++14可能要稍微做点工作.
+5 这个测试使用了C++17 标准, 主要是inline variable及 struct binding. 转成C++14可能要稍微做点工作.
 
-6 如果用std::tuple<...> 来描述 Address, Firend, Address等实体, 序列化/反序列化 皆可用通用泛型来完成.
+6 新版中反序列化 计划分2层, 一层通用容器, 一层在boost_serialization下用户定制.
 
-7 序列化结果
+7 新版序列化结果
+
+{
+    "name": "p1",
+    "age": 4,
+    "address": {
+        "country": "china",
+        "city": "beijing",
+        "street": "wangjing",
+        "neighbors": [
+            {
+                "name": "p2",
+                "age": 3,
+                "address": {
+                    "country": "china",
+                    "city": "shanghai",
+                    "street": "putuo",
+                    "neighbors": []
+                },
+                "_friends": [],
+                "secret": null
+            }
+        ]
+    },
+    "_friends": [
+        {
+            "relation": "my best friend",
+            "secret": {
+                "type": "rocker",
+                "age": 18
+            }
+        },
+        {
+            "relation": "new friend",
+            "secret": "little girl"
+        },
+        {
+            "relation": "third friend",
+            "secret": 3
+        }
+    ],
+    "secret": "the kind!"
+}
+
+8 旧版序列化结果
 
 {
     "tag_data": {
