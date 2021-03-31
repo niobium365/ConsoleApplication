@@ -1,8 +1,6 @@
 #pragma once
 
 #include "common_json_archive.hpp"
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/nvp.hpp>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -23,10 +21,10 @@ struct json_iarchive_t
 {
 	json_iarchive_t(rapidjson::Value&& v) : doc(M__(v)){};
 
-	using is_saving = boost::false_type;
+	using is_saving = std::false_type;
 
 	template <typename T>
-	json_iarchive_t& operator>>(boost::serialization::nvp<T> const& nv)
+	json_iarchive_t& operator>>(json_serialization::nvp<T> const& nv)
 	{
 		load(nv.name(), nv.value());
 		return *this;
@@ -77,7 +75,7 @@ struct json_iarchive_t
 	void load(T& v2)
 	{
 		auto& v = const_cast<std::decay_t<T>&>(v2);
-		using boost::serialization::serialize;
+		using json_serialization::serialize;
 		serialize(*this, v, 0u);
 	}
 

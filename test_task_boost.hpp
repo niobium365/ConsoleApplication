@@ -1,21 +1,15 @@
 #pragma once
 
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
+#include "nvp.hpp"
 
 #include "test_task.hpp"
 
 
 #define JSON_SERIALIZATION_NVP(name)                              \
-    boost::serialization::make_nvp(BOOST_PP_STRINGIZE(name), g.name)
+    json_serialization::make_nvp(#name, g.name)
 
 
-namespace boost
-{
-namespace serialization
+namespace json_serialization
 {
 
 template <class Archive>
@@ -49,8 +43,7 @@ void serialize(Archive& ar, Person& g, const unsigned int version)
 	ar& JSON_SERIALIZATION_NVP(secret);
 }
 
-} // namespace serialization
-} // namespace boost
+} // namespace json_serialization
 
 #include "json_oarchive.hpp"
 #include "json_iarchive.hpp"

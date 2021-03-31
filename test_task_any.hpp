@@ -13,7 +13,6 @@
 
 #include "common_json_archive.hpp"
 
-#include <boost/core/enable_if.hpp>
 
 template <typename T>
 rapidjson::Value f_json_dump_value(T&& a);
@@ -26,6 +25,21 @@ void f_json_parse_value(rapidjson::Value&& v, T& a);
 
 namespace json
 {
+
+template <bool B, class T = void>
+struct disable_if_c
+{
+	typedef T type;
+};
+
+template <class T>
+struct disable_if_c<true, T>
+{};
+
+template <class Cond, class T = void>
+struct disable_if : public disable_if_c<Cond::value, T>
+{};
+
 
 struct any
 {
@@ -42,8 +56,8 @@ struct any
 
 	template <typename ValueType>
 	any(ValueType&& a,
-		typename boost::disable_if<std::is_same<any&, ValueType>>::type* = 0, // disable if value has type `any&`
-		typename boost::disable_if<std::is_const<ValueType>>::type* =
+		typename disable_if<std::is_same<any&, ValueType>>::type* = 0, // disable if value has type `any&`
+		typename disable_if<std::is_const<ValueType>>::type* =
 			0) // disable if value has type `const ValueType&&`
 		: json_obj(new rapidjson::Value(f_json_dump_value(a))), obj(F__(a))
 	{}

@@ -4,10 +4,10 @@
 
 1 本测试程序新版参考了 https://www.boost.org/doc/libs/1_75_0/libs/serialization/doc/index.html.
 
-2 测试工程在CMAKE clang11 Ubuntu20 x64模式下编译通过 完成.
+2 测试工程在CMAKE clang11/gcc9 Ubuntu20 x64模式下编译通过 完成.
 
 3 第二版 已经完成序列化和 反序列化部分, 剩余工作包括 
-3.0 去除对boost的依赖
+
 3.1 反序列化失败则抛异常, 
 3.2 反序列化 适配通用STL情景 
 3.3 支持所有RFC 标准的json 所有类型 比如binary 等
@@ -17,7 +17,7 @@
 
 5 这个测试使用了C++14 标准.
 
-6 新版中反序列化 应该分2层, 一层适配通用STL情景, 一层在boost::serialization 名字空间下用户定制.
+6 新版中反序列化 应该分2层, 一层适配通用STL情景, 一层在json_serialization 名字空间下用户定制.
 
 7 新版序列化结果
 
