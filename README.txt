@@ -7,6 +7,7 @@
 2 测试工程在CMAKE clang11 Ubuntu20 x64模式下编译通过 完成.
 
 3 第二版 已经完成序列化和 反序列化部分, 剩余工作包括 
+3.0 去除对boost的依赖
 3.1 反序列化失败则抛异常, 
 3.2 反序列化 适配通用STL情景 
 3.3 支持所有RFC 标准的json 所有类型 比如binary 等
@@ -14,7 +15,7 @@
 
 4 本测试使用RapidJason库, 还可以进一步试用nlohmann::json
 
-5 这个测试使用了C++17 标准, 主要是inline variable及 struct binding. 转成C++14可能要稍微做点工作.
+5 这个测试使用了C++14 标准.
 
 6 新版中反序列化 应该分2层, 一层适配通用STL情景, 一层在boost::serialization 名字空间下用户定制.
 
