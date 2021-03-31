@@ -81,6 +81,10 @@ struct json_oarchive_t
 	{
 		doc = rapidjson::Value(s, f_alloc());
 	}
+	void save(const char* s)
+	{
+		doc = rapidjson::Value(s, f_alloc());
+	}
 	void save(std::string& s)
 	{
 		doc = rapidjson::Value(s, f_alloc());

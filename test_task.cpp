@@ -137,11 +137,11 @@ int main_impl2()
 	}
 
 	Friend f1{"my best friend", Singer{"rocker", 18}};
-	Friend f2{"new friend", "little girl"s};
+	Friend f2{"new friend", "little girl"};
 	Friend f3{"third friend", 3};
 	Person p2{"p2", 3, Address{"china", "shanghai", "putuo"}};
 	Address addr1{"china", "beijing", "wangjing", {p2}};
-	Person p1{"p1", 4, addr1, {f1, f2, f3}, "the kind!"s};
+	Person p1{"p1", 4, addr1, {f1, f2, f3}, "the kind!"};
 
 	auto json = f_json_dump_value(p1); // 序列化
 	dump_v(json);                      // 打印序列化结果

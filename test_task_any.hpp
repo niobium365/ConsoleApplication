@@ -89,9 +89,7 @@ struct any
 				  {
 					  return rapidjson::Value();
 				  }
-				  // FIXME 需要解决 array_to_pointer 转换类型不match情况
-				  // const char buf[10] vs const char*
-				  return f_json_dump_value(any_cast<ValueType const&>(obj));
+				  return f_json_dump_value(any_cast<std::decay_t<ValueType> const&>(obj));
 			  }),
 		  obj(F__(a))
 	{}
