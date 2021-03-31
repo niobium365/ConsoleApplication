@@ -5,6 +5,7 @@
 #include <iostream>
 #include <experimental/any>
 #include <memory>
+#include <functional>
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
@@ -43,11 +44,37 @@ struct disable_if : public disable_if_c<Cond::value, T>
 
 struct any
 {
-	any() = default;
+	any()
+    :json_obj{new rapidjson::Value()}
+    {}
+
+	auto get_json() const
+	{
+        if(!json_obj)
+        {
+            json_obj = std::make_shared<rapidjson::Value>(json_obj_fun());
+            json_obj_fun = {};
+        }
+		return json_obj;
+	}
 
 	void swap(any& other)
 	{
 		obj.swap(other.obj);
+
+        // json_obj_fun capture this pointer!
+        // TODO 尽量不要现在序列化
+        if(!json_obj)
+        {
+            get_json();
+            json_obj_fun = {};
+        }
+        if(!other.json_obj)
+        {
+            other.get_json();
+            other.json_obj_fun = {};
+        }
+
 		std::swap(json_obj, other.json_obj);
 	}
 
@@ -59,7 +86,17 @@ struct any
 		typename disable_if<std::is_same<any&, ValueType>>::type* = 0, // disable if value has type `any&`
 		typename disable_if<std::is_const<ValueType>>::type* =
 			0) // disable if value has type `const ValueType&&`
-		: json_obj(new rapidjson::Value(f_json_dump_value(a))), obj(F__(a))
+		: json_obj_fun([=]()
+        {
+            if(obj.empty())
+            {
+                return rapidjson::Value();
+            }
+            // FIXME 需要解决 array_to_pointer 转换类型不match情况
+            // const char buf[10] vs const char*
+            return f_json_dump_value(any_cast<ValueType const&>(obj));
+        })
+        , obj(F__(a))
 	{}
 
 	bool has_value() const
@@ -70,18 +107,15 @@ struct any
 	{
 		return obj.type();
 	}
-	auto get_json() const
-	{
-		return json_obj;
-	}
-
 	decltype(auto) get_obj() const
 	{
 		return (obj);
 	}
 
   private:
-	std::shared_ptr<rapidjson::Value> json_obj{new rapidjson::Value()}; // 默认为Null
+    // TODO 尽量去掉mutable
+	mutable std::shared_ptr<rapidjson::Value> json_obj;//{new rapidjson::Value()}; // 默认为Null
+    mutable std::function<rapidjson::Value()> json_obj_fun;
 
 	// 因为any object 可以被any_cast成实际类型 然后被修改
 	// 这种情况下 无法监控到obj的变化 从而同步修改 json_obj
