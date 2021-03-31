@@ -5,8 +5,6 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 
 #include "test_task.hpp"
-#include "test_task_parse.hpp"
-#include "test_task_dump.hpp"
 #include "test_task_boost.hpp"
 #include <string>
 #include <vector>
@@ -36,29 +34,6 @@ using std::ostream;
 using std::operator""s;
 
 template <typename T>
-void register_it()
-{
-	register_deserialization<T>();
-	register_serialization(id__<T>{});
-}
-
-
-inline auto dummy = []()
-{
-	register_it<Person>();
-	register_it<Friend>();
-	register_it<Address>();
-	register_it<Singer>();
-	register_it<string>();
-	register_it<int>();
-	register_it<size_t>();
-	register_it<json::any>();
-	// register_it<const char*>();
-
-	return true;
-}();
-
-template <typename T>
 ostream& operator<<(ostream& os, vector<T> const& d)
 {
 	os << "[";
@@ -79,10 +54,10 @@ ostream& operator<<(ostream& os, int d)
 ostream& operator<<(ostream& os, Friend const& d);
 ostream& operator<<(ostream& os, Address const& d);
 ostream& operator<<(ostream& os, json::any const& d);
-
+std::string dump_v(Value const& v);
 ostream& operator<<(ostream& os, json::any const& d)
 {
-	os << dump(d);
+	os << dump_v(f_json_dump_value(d));
 	return os;
 }
 
@@ -166,50 +141,6 @@ int main_impl2()
 	auto& x = json::any_cast<string const&>(pp.secret);
 
 	dump_v(f_json_dump_value(pp));
-	return 0;
-}
-
-int main_impl()
-{
-	Friend f1{"my best friend", Singer{"rocker", 18}};
-	Friend f2{"new friend", "little girl"};
-	Friend f3{"third friend", 3};
-	Person p2{"p2", 3, Address{"china", "shanghai", "putuo"}};
-	Address addr1{"china", "beijing", "wangjing", {p2}};
-	Person p1{"p1", 4, addr1, {f1, f2, f3}, "the kind!"};
-
-	// TODO. 以下是伪代码，需要笔试者具体实现
-
-	{
-		json::any aaa = string("Rocker!");
-		auto s = dump(aaa);
-		std::cout << s << std::endl; // 打印序列化结果
-		auto m = parse(s);
-		auto& kkk = json::any_cast<string const&>(m);
-		assert(aaa == m); // 反序列化的结果是对的
-	}
-
-	{
-		Singer aaa{"aaa", 100};
-		auto s = dump(aaa);
-		std::cout << s << std::endl; // 打印序列化结果
-		auto m = parse(s);
-		auto& kkk = json::any_cast<Singer const&>(m);
-		assert(json::any(aaa) == m); // 反序列化的结果是对的
-	}
-
-
-	auto json = dump(p1);           // 序列化
-	std::cout << json << std::endl; // 打印序列化结果
-
-	std::cout << p1 << std::endl; // 打印 Person 对象
-
-	auto pp = parse(json); // 反序列化
-
-	auto& kkk2 = json::any_cast<Person const&>(pp);
-
-	assert(json::any(p1) == pp); // 反序列化的结果是对的
-
 	return 0;
 }
 
