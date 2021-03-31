@@ -61,7 +61,7 @@ struct json_oarchive_t
 	template <typename T>
 	void save(char const* name, T& v)
 	{
-		doc.AddMember(rapidjson::StringRef(name), f_json_dump_value(v), s_doc_ins.GetAllocator()); //数据
+		doc.AddMember(rapidjson::StringRef(name), f_json_dump_value(v), f_alloc()); //数据
 	}
 	void save(bool b)
 	{
@@ -73,7 +73,7 @@ struct json_oarchive_t
 	}
 	void save(json::any& v)
 	{
-		doc.CopyFrom(*v.get_json(), s_doc_ins.GetAllocator());
+		doc.CopyFrom(*v.get_json(), f_alloc());
 	}
 	void save(unsigned long i)
 	{
@@ -81,11 +81,11 @@ struct json_oarchive_t
 	}
 	void save(char* s)
 	{
-		doc = rapidjson::Value(s, s_doc_ins.GetAllocator());
+		doc = rapidjson::Value(s, f_alloc());
 	}
 	void save(std::string& s)
 	{
-		doc = rapidjson::Value(s, s_doc_ins.GetAllocator());
+		doc = rapidjson::Value(s, f_alloc());
 	}
 
 	template <typename T>
@@ -97,14 +97,14 @@ struct json_oarchive_t
 		serialize(*this, v, 0u);
 	}
 
-    template<template<typename...> typename C, typename...ARGS>
+    template<template<typename...> class C, typename...ARGS>
     auto save(C<ARGS...>& vec_) -> decltype(vec_.size(), void())
 	{
 		using boost::serialization::serialize;
 		doc = rapidjson::Value(rapidjson::kArrayType);
 		for (auto&& itm : vec_)
 		{
-			doc.PushBack(f_json_dump_value(itm), s_doc_ins.GetAllocator());
+			doc.PushBack(f_json_dump_value(itm), f_alloc());
 		}
 	}
 };

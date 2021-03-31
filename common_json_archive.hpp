@@ -10,5 +10,5 @@
 #define F__(x) std::forward<decltype(x)>(x)
 #define M__(x) std::move(x)
 
-inline rapidjson::Document s_doc_ins;
+decltype(std::declval<rapidjson::Document>().GetAllocator()) f_alloc();
 

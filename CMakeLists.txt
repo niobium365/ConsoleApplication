@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 3.19.1)
 
 add_compile_options(-v -Wall 
 -fno-function-sections -fno-data-sections -Wextra -Wno-unused-parameter -pthread 
--stdlib=libc++
--std=gnu++17 
+-Wno-missing-field-initializers
+-Wno-unused-variable
+#-stdlib=libc++
+-std=gnu++14 
 #-m32
 -gdwarf-2 -ggdb
 )
@@ -34,7 +36,7 @@ target_compile_options(${_target} PUBLIC $<$<COMPILE_LANGUAGE:C>:
 -fno-addrsig
 >
 $<$<COMPILE_LANGUAGE:CXX>:
--std=gnu++17 
+-std=gnu++14 
 -fexceptions
 -O0
 >

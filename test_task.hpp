@@ -53,32 +53,22 @@ struct Person
 inline bool operator==(Address const& lhs, Address const& rhs);
 inline bool operator==(Friend const& lhs, Friend const& rhs)
 {
-	auto& [a1, b1] = lhs;
-	auto& [a2, b2] = rhs;
-
-	return std::tie(a1, b1) == std::tie(a2, b2);
+	return std::tie(lhs.relation, lhs.secret) == std::tie(rhs.relation, rhs.secret);
 }
 
 inline bool operator==(Singer const& lhs, Singer const& rhs)
 {
-	auto& [a1, b1] = lhs;
-	auto& [a2, b2] = rhs;
-
-	return std::tie(a1, b1) == std::tie(a2, b2);
+	return std::tie(lhs.age, lhs.type) == std::tie(rhs.age, rhs.type);
 }
 
 inline bool operator==(Person const& lhs, Person const& rhs)
 {
-	auto& [a1, b1, c1, d1, e1] = lhs;
-	auto& [a2, b2, c2, d2, e2] = rhs;
-
-	return std::tie(a1, b1, c1, d1, e1) == std::tie(a2, b2, c2, d2, e2);
+	return std::tie(lhs.address, lhs.age, lhs.name, lhs.secret, lhs._friends) ==
+		   std::tie(rhs.address, rhs.age, rhs.name, rhs.secret, rhs._friends);
 }
 
 inline bool operator==(Address const& lhs, Address const& rhs)
 {
-	auto& [a1, b1, c1, d1] = lhs;
-	auto& [a2, b2, c2, d2] = rhs;
-
-	return std::tie(a1, b1, c1, d1) == std::tie(a2, b2, c2, d2);
+	return std::tie(lhs.city, lhs.country, lhs.neighbors, lhs.street) ==
+		   std::tie(rhs.city, rhs.country, rhs.neighbors, rhs.street);
 }

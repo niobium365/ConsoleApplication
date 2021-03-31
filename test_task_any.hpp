@@ -3,7 +3,8 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <any>
+#include <experimental/any>
+#include <memory>
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
 #include "rapidjson/stringbuffer.h"
@@ -49,7 +50,7 @@ struct any
 
 	bool has_value() const
 	{
-		return obj.has_value();
+		return !obj.empty();
 	}
 	decltype(auto) type() const
 	{
@@ -71,20 +72,20 @@ struct any
 	// 因为any object 可以被any_cast成实际类型 然后被修改
 	// 这种情况下 无法监控到obj的变化 从而同步修改 json_obj
 	// TODO: 研究如何监控any object 被修改(any_cast成实际类型后)
-	mutable std::any obj;
+	mutable std::experimental::any obj;
 };
 
 template <typename T, typename ANY>
-auto any_cast(ANY&& a) -> decltype(std::any_cast<T>(F__(a).get_obj()))
+auto any_cast(ANY&& a) -> decltype(std::experimental::any_cast<T>(F__(a).get_obj()))
 {
 	if (!a.has_value() && !a.get_json()->IsNull())
 	{
 		// 利用any_cast的时机构造实际对象
 		std::decay_t<T> temp;
-		f_json_parse_value(M__(rapidjson::Value().CopyFrom(*a.get_json(), s_doc_ins.GetAllocator())), temp);
+		f_json_parse_value(M__(rapidjson::Value().CopyFrom(*a.get_json(), f_alloc())), temp);
 		a.get_obj() = M__(temp);
 	}
-	return std::any_cast<T>(F__(a).get_obj());
+	return std::experimental::any_cast<T>(F__(a).get_obj());
 }
 
 bool operator==(any const& lhs, any const& rhs)

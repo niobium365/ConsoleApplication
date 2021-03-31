@@ -96,6 +96,18 @@ std::string dump_v(Value const& v)
 	return r;
 };
 
+decltype(std::declval<rapidjson::Document>().GetAllocator()) f_alloc()
+{
+	static auto& s_alloc = []() -> auto&
+	{
+		static Document s_doc;
+		return s_doc.GetAllocator();
+	}
+	();
+
+	return s_alloc;
+}
+
 int main_impl2()
 {
 	{
