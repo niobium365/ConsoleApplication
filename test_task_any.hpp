@@ -100,6 +100,12 @@ struct any
 		  obj(F__(a))
 	{}
 
+	// TODO 赋值功能
+	// auto& operator=(any const&);
+	// auto& operator=(any&&);
+	// template <typename T>
+	// auto& operator=(T&&);
+
 	template <typename T>
 	decltype(auto) explicit_parse()
 	{
