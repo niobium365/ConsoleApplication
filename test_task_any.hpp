@@ -116,6 +116,23 @@ struct any
 	{
 		return !obj.empty();
 	}
+
+	// 检测是否为NULL
+	bool is_null() const
+	{
+		if (json_obj)
+		{
+			return json_obj->IsNull();
+		}
+
+		if (json_obj_fun)
+		{
+			return !has_value();
+		}
+
+		return true;
+	}
+
 	decltype(auto) type() const
 	{
 		if (!has_value() && json_obj && !json_obj->IsNull())
