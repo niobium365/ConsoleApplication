@@ -40,8 +40,12 @@ template <class Cond, class T = void>
 struct disable_if : public disable_if_c<Cond::value, T>
 {};
 
+struct tag_unknown_any_t
+{};
+
 struct any
 {
+	// ctorA: 构造一个空的any
 	any() : json_obj{new rapidjson::Value()}
 	{}
 
@@ -75,9 +79,11 @@ struct any
 		std::swap(json_obj, other.json_obj);
 	}
 
+	// ctorB: 构造一个unknown类型的的any, 实际类型要等用户any_cast 后获得
 	any(rapidjson::Value&& v) : json_obj(new rapidjson::Value(M__(v)))
 	{}
 
+	// ctorC: 构造一个已知类型的的any
 	template <typename ValueType>
 	any(ValueType&& a,
 		typename disable_if<std::is_same<any&, ValueType>>::type* = 0, // disable if value has type `any&`
@@ -100,6 +106,10 @@ struct any
 	}
 	decltype(auto) type() const
 	{
+		if (!has_value() && json_obj && !json_obj->IsNull())
+		{
+			return typeid(tag_unknown_any_t);
+		}
 		return obj.type();
 	}
 	decltype(auto) get_obj() const
