@@ -79,7 +79,7 @@ struct any
 		std::swap(json_obj, other.json_obj);
 	}
 
-	// ctorB: 构造一个unknown类型的的any, 实际类型要等用户any_cast 后获得
+	// ctorB: 构造一个unknown类型的的any, 实际类型要等用户any_cast 后 或者用户explicit_parse 后获得
 	any(rapidjson::Value&& v) : json_obj(new rapidjson::Value(M__(v)))
 	{}
 
@@ -99,6 +99,18 @@ struct any
 			  }),
 		  obj(F__(a))
 	{}
+
+	template <typename T>
+	decltype(auto) explicit_parse()
+	{
+		if (!has_value() && json_obj && !json_obj->IsNull())
+		{
+			std::decay_t<T> temp;
+			f_json_parse_value(M__(rapidjson::Value().CopyFrom(*json_obj, f_alloc())), temp);
+			obj = M__(temp);
+		}
+		return *this;
+	}
 
 	bool has_value() const
 	{
@@ -131,13 +143,9 @@ struct any
 template <typename T, typename ANY>
 auto any_cast(ANY&& a) -> decltype(std::experimental::any_cast<T>(F__(a).get_obj()))
 {
-	if (!a.has_value() && !a.get_json()->IsNull())
-	{
-		// 利用any_cast的时机构造实际对象
-		std::decay_t<T> temp;
-		f_json_parse_value(M__(rapidjson::Value().CopyFrom(*a.get_json(), f_alloc())), temp);
-		a.get_obj() = M__(temp);
-	}
+	// 利用any_cast的时机构造实际对象
+	a.template explicit_parse<std::decay_t<T>>();
+
 	return std::experimental::any_cast<T>(F__(a).get_obj());
 }
 
